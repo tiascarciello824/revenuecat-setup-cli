@@ -29,7 +29,7 @@ Ho preparato un template pronto in: `EMAIL_TO_REVENUECAT.txt`
 Invia questa email a: **support@revenuecat.com**
 
 Personalizza:
-- `[username]` con il tuo username GitHub (se hai il progetto su GitHub)
+- Il tuo username GitHub è già inserito: tiascarciello824
 - `[Your Name]` con il tuo nome
 - `[Your Email]` con la tua email
 

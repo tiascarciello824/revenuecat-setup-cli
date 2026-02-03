@@ -12,7 +12,7 @@ I'd like to register an OAuth client with the following details:
 **Client Information:**
 - Client Name: RevenueCat Setup CLI
 - Client Type: Public (CLI/Desktop application)
-- Client URI: https://github.com/[username]/revenuecat-setup-cli
+- Client URI: https://github.com/tiascarciello824/revenuecat-setup-cli
 - Description: Automated setup tool for RevenueCat integration in React Native/Expo apps
 
 **Redirect URIs:**
@@ -47,5 +47,5 @@ Could you please register this OAuth client and provide me with the client_id?
 Thank you for your support!
 
 Best regards,
-[Your Name]
-[Your Email]
+Carmine Mattiascarciello
+tiascarciello@gmail.com

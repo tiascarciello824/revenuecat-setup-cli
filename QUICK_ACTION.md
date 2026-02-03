@@ -24,7 +24,7 @@ account instead of managing API keys.
 Client Information:
 - Client Name: RevenueCat Setup CLI
 - Client Type: Public (CLI/Desktop application)
-- Client URI: https://github.com/[TUO_USERNAME]/revenuecat-setup-cli
+- Client URI: https://github.com/tiascarciello824/revenuecat-setup-cli
 - Description: Automated setup tool for RevenueCat integration
 
 Redirect URIs:
@@ -45,8 +45,8 @@ Could you please register this OAuth client and provide the client_id?
 
 Thank you!
 
-[TUO_NOME]
-[TUA_EMAIL]
+Carmine Mattiascarciello
+tiascarciello@gmail.com
 ```
 
 ---

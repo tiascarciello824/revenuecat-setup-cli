@@ -37,7 +37,7 @@ Automated RevenueCat project setup for React Native and Expo apps. Create projec
 
 ```bash
 # Clone the repository
-git clone https://github.com/[YOUR_USERNAME]/revenuecat-setup-cli.git
+git clone https://github.com/tiascarciello824/revenuecat-setup-cli.git
 cd revenuecat-setup-cli
 
 # Install dependencies
@@ -239,7 +239,7 @@ MIT
 
 - [RevenueCat Documentation](https://www.revenuecat.com/docs)
 - [OAuth Setup Guide](./OAUTH_SETUP.md)
-- [Issues](https://github.com/[YOUR_USERNAME]/revenuecat-setup-cli/issues)
+- [Issues](https://github.com/tiascarciello824/revenuecat-setup-cli/issues)
 
 ## ⚙️ OAuth Setup
 
@@ -255,5 +255,5 @@ Built with ❤️ for the React Native and Expo community.
 
 ---
 
-**Made by**: [Your Name]  
+**Made by**: Carmine Mattiascarciello  
 **Powered by**: [RevenueCat](https://www.revenuecat.com)
