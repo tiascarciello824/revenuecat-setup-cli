@@ -1,0 +1,10 @@
+src/
+tsconfig.json
+*.test.ts
+*.spec.ts
+coverage/
+.vscode/
+.idea/
+outputs/
+node_modules/
+.git/

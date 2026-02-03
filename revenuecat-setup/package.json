@@ -1,0 +1,48 @@
+{
+  "name": "revenuecat-setup-cli",
+  "version": "1.0.0",
+  "description": "Automated RevenueCat setup for React Native/Expo apps",
+  "main": "dist/index.js",
+  "bin": {
+    "revenuecat-setup": "./dist/bin/revenuecat-setup.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/bin/revenuecat-setup.js",
+    "dev": "ts-node src/index.ts",
+    "test": "jest",
+    "skill": "node skill-entry.js"
+  },
+  "keywords": [
+    "revenuecat",
+    "subscriptions",
+    "react-native",
+    "expo",
+    "in-app-purchases",
+    "iap",
+    "monetization"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "inquirer": "^9.2.12",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "axios": "^1.6.5",
+    "handlebars": "^4.7.8",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/inquirer": "^9.0.7",
+    "@types/jest": "^29.5.11",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

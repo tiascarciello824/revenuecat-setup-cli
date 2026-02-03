@@ -1,0 +1,51 @@
+To: support@revenuecat.com
+Subject: OAuth Client Registration Request - RevenueCat Setup CLI
+
+Hi RevenueCat Team,
+
+I'm developing an open-source CLI tool to streamline RevenueCat integration for React Native and Expo developers. The tool automates the entire setup process: creating projects, configuring apps, setting up products/entitlements, and generating integration code.
+
+To provide the best user experience, I'd like to implement OAuth authentication so users can simply login with their RevenueCat account instead of managing API keys.
+
+I'd like to register an OAuth client with the following details:
+
+**Client Information:**
+- Client Name: RevenueCat Setup CLI
+- Client Type: Public (CLI/Desktop application)
+- Client URI: https://github.com/[username]/revenuecat-setup-cli
+- Description: Automated setup tool for RevenueCat integration in React Native/Expo apps
+
+**Redirect URIs:**
+- http://localhost:3000/callback
+- http://127.0.0.1:3000/callback
+
+**Required Scopes:**
+- projects:write
+- apps:write  
+- products:write
+- entitlements:write
+- offerings:write
+
+**Use Case:**
+The tool helps developers automatically:
+1. Create and configure RevenueCat projects
+2. Set up iOS and Android apps
+3. Create subscription products with trials
+4. Configure entitlements and offerings
+5. Generate TypeScript integration code
+6. Set up Supabase webhooks (if applicable)
+
+Users will authorize the tool via OAuth flow in their browser, and the tool will then perform all setup operations on their behalf.
+
+**Technical Implementation:**
+- Authorization Code flow with PKCE (S256)
+- Local callback server on port 3000
+- No client secret (public client)
+
+Could you please register this OAuth client and provide me with the client_id?
+
+Thank you for your support!
+
+Best regards,
+[Your Name]
+[Your Email]
