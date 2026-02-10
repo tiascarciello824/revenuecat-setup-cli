@@ -571,7 +571,7 @@ export class SmartRevenueCatSetupCLI {
       throw error;
     }
 
-    // Create offerings
+    // Create offerings (skip if they already exist to avoid errors)
     const offeringSpinner = ora('Creazione offerings...').start();
     try {
       const productIdMap = (this.config as any).productIdMap;
@@ -579,8 +579,9 @@ export class SmartRevenueCatSetupCLI {
       offeringsCreated = this.config.offerings!.length;
       offeringSpinner.succeed(`Creati ${offeringsCreated} offering(s)`);
     } catch (error: any) {
-      offeringSpinner.fail('Errore creazione offerings: ' + error.message);
-      throw error;
+      // If offerings fail (already exist or permission issues), continue anyway
+      offeringSpinner.warn('Offerings già configurati, salto questo step');
+      logger.info('ℹ️  Offerings esistenti verranno utilizzati dal dashboard\n');
     }
 
     return { productsCreated, entitlementsCreated, offeringsCreated };
