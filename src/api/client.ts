@@ -338,12 +338,11 @@ export class RevenueCatClient {
   }
 
   /**
-   * Create a package in an offering
+   * Create a package in an offering (without products)
    */
   async createPackage(offeringId: string, pkg: {
     lookup_key: string;
     display_name: string;
-    product_id: string;
   }): Promise<any> {
     try {
       const response = await this.client.post(
@@ -355,8 +354,48 @@ export class RevenueCatClient {
     } catch (error: any) {
       if (error.response?.status === 409) {
         logger.warning(`Package ${pkg.lookup_key} already exists, skipping...`);
-        return { lookup_key: pkg.lookup_key, existed: true };
+        // Fetch existing packages to get ID
+        const packages = await this.getPackages(offeringId);
+        const existing = packages.find((p: any) => p.lookup_key === pkg.lookup_key);
+        return existing || { lookup_key: pkg.lookup_key, existed: true };
       }
+      handleAPIError(error);
+    }
+  }
+
+  /**
+   * Get all packages in an offering
+   */
+  async getPackages(offeringId: string): Promise<any[]> {
+    try {
+      const response = await this.client.get(
+        `/projects/${this.projectId}/offerings/${offeringId}/packages`
+      );
+      return response.data.items || response.data || [];
+    } catch (error) {
+      handleAPIError(error);
+      return [];
+    }
+  }
+
+  /**
+   * Attach products to a package
+   */
+  async attachProductsToPackage(
+    offeringId: string,
+    packageId: string,
+    productIds: string[]
+  ): Promise<any> {
+    try {
+      const response = await this.client.post(
+        `/projects/${this.projectId}/offerings/${offeringId}/packages/${packageId}/actions/attach_products`,
+        {
+          product_ids: productIds,
+        }
+      );
+      logger.success(`Attached ${productIds.length} product(s) to package`);
+      return response.data;
+    } catch (error: any) {
       handleAPIError(error);
     }
   }

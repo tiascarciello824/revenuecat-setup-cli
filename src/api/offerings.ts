@@ -40,7 +40,7 @@ export async function createOfferings(
     const result = await retryWithBackoff(() => client.createOffering(offeringPayload));
     const offeringId = result.id || result.object?.id;
     
-    // Step 2: Create packages in the offering
+    // Step 2: Create packages in the offering and attach products
     if (offeringId && offering.packages && offering.packages.length > 0) {
       for (const pkg of offering.packages) {
         // Convert store identifier to actual product ID if map is available
@@ -51,15 +51,23 @@ export async function createOfferings(
         // Generate display name from package type
         const displayName = pkg.type.charAt(0).toUpperCase() + pkg.type.slice(1);
         
+        // Step 2a: Create package (without product)
         const packagePayload = {
           lookup_key: getPackageIdentifier(pkg.type),
-          display_name: displayName, // Required in API v2
-          product_id: actualProductId,
+          display_name: displayName,
         };
         
-        await retryWithBackoff(() => 
+        const createdPkg = await retryWithBackoff(() => 
           client.createPackage(offeringId, packagePayload)
         );
+        
+        // Step 2b: Attach products to package
+        const packageId = createdPkg?.id || createdPkg?.object?.id;
+        if (packageId && actualProductId) {
+          await retryWithBackoff(() =>
+            client.attachProductsToPackage(offeringId, packageId, [actualProductId])
+          );
+        }
       }
     }
     
