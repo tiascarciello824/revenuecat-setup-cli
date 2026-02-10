@@ -187,7 +187,16 @@ export async function authenticateWithOAuth(): Promise<string> {
   authUrl.searchParams.set('client_id', CLIENT_ID);
   authUrl.searchParams.set('response_type', 'code');
   authUrl.searchParams.set('redirect_uri', REDIRECT_URI);
-  authUrl.searchParams.set('scope', 'projects:write apps:write products:write entitlements:write offerings:write');
+  // RevenueCat OAuth scopes (space-separated)
+  const scopes = [
+    'project_configuration:projects:read',
+    'project_configuration:apps:read_write',
+    'project_configuration:products:read_write',
+    'project_configuration:entitlements:read_write',
+    'project_configuration:offerings:read_write',
+  ].join(' ');
+  
+  authUrl.searchParams.set('scope', scopes);
   authUrl.searchParams.set('state', state);
   authUrl.searchParams.set('code_challenge', challenge);
   authUrl.searchParams.set('code_challenge_method', 'S256');
