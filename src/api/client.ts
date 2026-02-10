@@ -142,6 +142,36 @@ export class RevenueCatClient {
   }
 
   /**
+   * Find app by bundle ID (iOS)
+   */
+  async findAppByBundleId(bundleId: string): Promise<any | null> {
+    try {
+      const apps = await this.getApps();
+      return apps.find((app: any) => 
+        app.app_store?.bundle_id === bundleId || 
+        app.bundle_id === bundleId
+      ) || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Find app by package name (Android)
+   */
+  async findAppByPackageName(packageName: string): Promise<any | null> {
+    try {
+      const apps = await this.getApps();
+      return apps.find((app: any) => 
+        app.play_store?.package_name === packageName || 
+        app.package_name === packageName
+      ) || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
    * Get public API keys for a specific app
    */
   async getAppKeys(appId: string): Promise<any> {

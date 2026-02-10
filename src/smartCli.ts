@@ -333,31 +333,61 @@ export class SmartRevenueCatSetupCLI {
 
     const client = new RevenueCatClient(this.config.apiKey!, (this.config as any).projectId);
 
-    // Create iOS app
+    // Create or get iOS app
     const iosSpinner = ora('Creazione app iOS...').start();
     try {
       const iosApp = await client.createIOSApp(
         this.detectedConfig.iosBundleId,
         `${this.detectedConfig.appName} (iOS)`
       );
-      iosSpinner.succeed('App iOS creata');
-      (this.config as any).iosAppId = iosApp.id || iosApp.object?.id;
+      
+      let iosAppId = iosApp?.id || iosApp?.object?.id || iosApp?.data?.id;
+      
+      // If app already existed (409), fetch it to get the ID
+      if (iosApp?.existed && !iosAppId) {
+        iosSpinner.text = 'App già esistente, recupero ID...';
+        const existingApp = await client.findAppByBundleId(this.detectedConfig.iosBundleId);
+        iosAppId = existingApp?.id;
+      }
+      
+      if (iosAppId) {
+        (this.config as any).iosAppId = iosAppId;
+        iosSpinner.succeed(`App iOS pronta (ID: ${iosAppId})`);
+      } else {
+        iosSpinner.fail('Impossibile ottenere iOS App ID');
+        throw new Error('iOS App ID non disponibile');
+      }
     } catch (error: any) {
-      iosSpinner.fail('Errore creazione app iOS: ' + error.message);
+      iosSpinner.fail('Errore setup app iOS: ' + error.message);
       throw error;
     }
 
-    // Create Android app
+    // Create or get Android app
     const androidSpinner = ora('Creazione app Android...').start();
     try {
       const androidApp = await client.createAndroidApp(
         this.detectedConfig.androidPackageName,
         `${this.detectedConfig.appName} (Android)`
       );
-      androidSpinner.succeed('App Android creata');
-      (this.config as any).androidAppId = androidApp.id || androidApp.object?.id;
+      
+      let androidAppId = androidApp?.id || androidApp?.object?.id || androidApp?.data?.id;
+      
+      // If app already existed (409), fetch it to get the ID
+      if (androidApp?.existed && !androidAppId) {
+        androidSpinner.text = 'App già esistente, recupero ID...';
+        const existingApp = await client.findAppByPackageName(this.detectedConfig.androidPackageName);
+        androidAppId = existingApp?.id;
+      }
+      
+      if (androidAppId) {
+        (this.config as any).androidAppId = androidAppId;
+        androidSpinner.succeed(`App Android pronta (ID: ${androidAppId})`);
+      } else {
+        androidSpinner.fail('Impossibile ottenere Android App ID');
+        throw new Error('Android App ID non disponibile');
+      }
     } catch (error: any) {
-      androidSpinner.fail('Errore creazione app Android: ' + error.message);
+      androidSpinner.fail('Errore setup app Android: ' + error.message);
       throw error;
     }
 
