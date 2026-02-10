@@ -173,13 +173,7 @@ async function exchangeCodeForTokens(
  * Opens browser for user to authorize, then returns access token
  */
 export async function authenticateWithOAuth(): Promise<string> {
-  // Check if client ID is registered
-  if (CLIENT_ID === 'PENDING_REGISTRATION') {
-    throw new Error(
-      'OAuth client not yet registered. Please use API key authentication for now.\n' +
-      'To enable OAuth: contact support@revenuecat.com to register this tool.'
-    );
-  }
+  // OAuth is ready to use!
 
   logger.section('🔐 RevenueCat OAuth Authentication');
   logger.info('Opening browser for authorization...\n');

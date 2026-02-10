@@ -164,29 +164,21 @@ export class SmartRevenueCatSetupCLI {
   private async stepAPIKey(): Promise<void> {
     logger.section('🔑 Autenticazione RevenueCat');
 
-    // Check if OAuth is available
-    const oauthAvailable = process.env.REVENUECAT_OAUTH_CLIENT_ID && 
-                          process.env.REVENUECAT_OAUTH_CLIENT_ID !== 'PENDING_REGISTRATION';
+    // Always offer OAuth as an option (it's now registered!)
+    const { method } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'method',
+        message: 'Scegli il metodo di autenticazione:',
+        choices: [
+          { name: '🌐 Login con browser (OAuth) - Consigliato', value: 'oauth' },
+          { name: '🔑 API Key manuale', value: 'apikey' },
+        ],
+        default: 'oauth',
+      },
+    ]);
 
-    let authMethod = 'apikey';
-
-    if (oauthAvailable) {
-      const { method } = await inquirer.prompt([
-        {
-          type: 'list',
-          name: 'method',
-          message: 'Scegli il metodo di autenticazione:',
-          choices: [
-            { name: '🌐 Login con browser (OAuth) - Consigliato', value: 'oauth' },
-            { name: '🔑 API Key manuale', value: 'apikey' },
-          ],
-          default: 'oauth',
-        },
-      ]);
-      authMethod = method;
-    }
-
-    if (authMethod === 'oauth') {
+    if (method === 'oauth') {
       try {
         // Import OAuth module dynamically
         const { authenticateWithOAuth } = await import('./auth/oauth');
