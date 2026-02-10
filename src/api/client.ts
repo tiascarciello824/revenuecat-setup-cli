@@ -342,6 +342,7 @@ export class RevenueCatClient {
    */
   async createPackage(offeringId: string, pkg: {
     lookup_key: string;
+    display_name: string;
     product_id: string;
   }): Promise<any> {
     try {

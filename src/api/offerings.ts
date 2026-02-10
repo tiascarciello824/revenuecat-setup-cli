@@ -48,8 +48,12 @@ export async function createOfferings(
           ? productIdMap.get(pkg.productId) || pkg.productId
           : pkg.productId;
         
+        // Generate display name from package type
+        const displayName = pkg.type.charAt(0).toUpperCase() + pkg.type.slice(1);
+        
         const packagePayload = {
           lookup_key: getPackageIdentifier(pkg.type),
+          display_name: displayName, // Required in API v2
           product_id: actualProductId,
         };
         
