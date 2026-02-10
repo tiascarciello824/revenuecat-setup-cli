@@ -146,12 +146,13 @@ async function exchangeCodeForTokens(
 ): Promise<OAuthTokenResponse> {
   const axios = require('axios');
 
+  // Prepare Basic Auth credentials
+  const basicAuth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
+
   const params = new URLSearchParams({
     grant_type: 'authorization_code',
     code,
     redirect_uri: REDIRECT_URI,
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET,
     code_verifier: codeVerifier,
   });
 
@@ -159,6 +160,7 @@ async function exchangeCodeForTokens(
     const response = await axios.post(`${OAUTH_BASE_URL}/token`, params, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${basicAuth}`,
       },
     });
 
