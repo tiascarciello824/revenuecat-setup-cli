@@ -85,8 +85,9 @@ export class RevenueCatClient {
         `/projects/${this.projectId}/apps`,
         {
           name,
-          type: 'app_store',
-          bundle_id: bundleId,
+          app_store: {
+            bundle_id: bundleId,
+          },
         }
       );
       logger.success(`Created iOS app: ${name}`);
@@ -109,8 +110,9 @@ export class RevenueCatClient {
         `/projects/${this.projectId}/apps`,
         {
           name,
-          type: 'play_store',
-          package_name: packageName,
+          play_store: {
+            package_name: packageName,
+          },
         }
       );
       logger.success(`Created Android app: ${name}`);
