@@ -16,14 +16,24 @@ export async function createEntitlements(
   const results = [];
 
   for (const entitlement of entitlements) {
+    // Step 1: Create entitlement (without products)
     const payload = {
       lookup_key: entitlement.id, // API v2 uses lookup_key instead of id
       display_name: entitlement.displayName, // API v2 uses display_name instead of name
-      product_ids: entitlement.productIds,
     };
 
-    // Create entitlement with retry logic
     const result = await retryWithBackoff(() => client.createEntitlement(payload));
+    
+    // Step 2: Attach products to entitlement
+    if (entitlement.productIds && entitlement.productIds.length > 0) {
+      const entitlementId = result.id || result.object?.id;
+      if (entitlementId) {
+        await retryWithBackoff(() => 
+          client.attachProductsToEntitlement(entitlementId, entitlement.productIds)
+        );
+      }
+    }
+    
     results.push(result);
   }
 

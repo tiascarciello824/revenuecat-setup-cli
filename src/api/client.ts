@@ -231,7 +231,6 @@ export class RevenueCatClient {
   async createEntitlement(entitlement: {
     lookup_key: string;
     display_name: string;
-    product_ids: string[];
   }): Promise<any> {
     try {
       const response = await this.client.post(
@@ -246,6 +245,27 @@ export class RevenueCatClient {
         logger.warning(`Entitlement ${entitlement.lookup_key} already exists, skipping...`);
         return { lookup_key: entitlement.lookup_key, existed: true };
       }
+      handleAPIError(error);
+    }
+  }
+
+  /**
+   * Attach products to an entitlement
+   */
+  async attachProductsToEntitlement(
+    entitlementId: string,
+    productIds: string[]
+  ): Promise<any> {
+    try {
+      const response = await this.client.post(
+        `/projects/${this.projectId}/entitlements/${entitlementId}/actions/attach_products`,
+        {
+          product_ids: productIds,
+        }
+      );
+      logger.success(`Attached ${productIds.length} products to entitlement`);
+      return response.data;
+    } catch (error: any) {
       handleAPIError(error);
     }
   }
