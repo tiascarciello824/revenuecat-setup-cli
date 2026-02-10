@@ -49,10 +49,8 @@ export async function createProducts(
         payload.subscription = {
           duration: isoDuration,
         };
-        // Add trial if specified
-        if (product.trialPeriodDays) {
-          payload.subscription.trial_duration = `P${product.trialPeriodDays}D`;
-        }
+        // Note: trial_duration must be configured in the store (App Store Connect / Google Play Console)
+        // It cannot be set via the RevenueCat API
       }
     }
 
