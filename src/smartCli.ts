@@ -277,86 +277,51 @@ export class SmartRevenueCatSetupCLI {
   }
 
   /**
-   * Step 4: Get or auto-detect Project ID (or create new)
+   * Step 4: Get or create Project ID
    */
   private async stepProjectId(): Promise<void> {
     logger.section('🏗️  RevenueCat Project');
 
-    const spinner = ora('Recupero progetti RevenueCat...').start();
+    // Try to create a new project directly (OAuth scope limitation workaround)
+    logger.info('ℹ️  Creazione progetto automatica...\n');
 
+    const createSpinner = ora('Creazione progetto in RevenueCat...').start();
+    
     try {
       const client = new RevenueCatClient(this.config.apiKey!, 'temp');
-      const projects = await client.getProjects();
-
-      spinner.stop();
-
-      if (!projects || projects.length === 0) {
-        // No projects - create one automatically
-        logger.info('ℹ️  Nessun progetto trovato. Creazione automatica...\n');
-
-        const createSpinner = ora('Creazione progetto in RevenueCat...').start();
-        
-        try {
-          const newProject = await client.createProject(this.detectedConfig.appName);
-          createSpinner.succeed(`Progetto creato: ${this.detectedConfig.appName}`);
-          
-          (this.config as any).projectId = newProject.id || newProject.object?.id;
-          (this.config as any).projectName = this.detectedConfig.appName;
-        } catch (error: any) {
-          createSpinner.fail('Errore nella creazione del progetto');
-          throw error;
-        }
-      } else if (projects.length === 1) {
-        // Auto-select single project
-        const project = projects[0];
-        logger.success(`✓ Progetto rilevato automaticamente: ${project.name || project.id}`);
-        (this.config as any).projectId = project.id;
-        (this.config as any).projectName = project.name || this.detectedConfig.appName;
-      } else {
-        // Multiple projects - let user choose or create new
-        const choices = [
-          ...projects.map((p: any) => ({
-            name: `${p.name || p.id} (esistente)`,
-            value: p.id,
-          })),
-          {
-            name: '+ Crea nuovo progetto',
-            value: '__CREATE_NEW__',
-          },
-        ];
-
-        const { projectId } = await inquirer.prompt([
-          {
-            type: 'list',
-            name: 'projectId',
-            message: 'Seleziona il progetto RevenueCat:',
-            choices,
-          },
-        ]);
-
-        if (projectId === '__CREATE_NEW__') {
-          // Create new project
-          const createSpinner = ora('Creazione nuovo progetto...').start();
-          
-          try {
-            const newProject = await client.createProject(this.detectedConfig.appName);
-            createSpinner.succeed(`Progetto creato: ${this.detectedConfig.appName}`);
-            
-            (this.config as any).projectId = newProject.id || newProject.object?.id;
-            (this.config as any).projectName = this.detectedConfig.appName;
-          } catch (error: any) {
-            createSpinner.fail('Errore nella creazione del progetto');
-            throw error;
-          }
-        } else {
-          const selectedProject = projects.find((p: any) => p.id === projectId);
-          (this.config as any).projectId = projectId;
-          (this.config as any).projectName = selectedProject?.name || this.detectedConfig.appName;
-        }
-      }
+      const newProject = await client.createProject(this.detectedConfig.appName);
+      
+      createSpinner.succeed(`Progetto creato: ${this.detectedConfig.appName}`);
+      
+      (this.config as any).projectId = newProject.id || newProject.object?.id;
+      (this.config as any).projectName = this.detectedConfig.appName;
     } catch (error: any) {
-      spinner.fail('Impossibile recuperare progetti');
-      throw error;
+      createSpinner.fail('Impossibile creare progetto automaticamente');
+      
+      // Fallback: ask for project ID manually
+      logger.warning('⚠️  Limitazione scope OAuth: impossibile creare o leggere progetti.\n');
+      logger.info('📋 Azione Richiesta:');
+      logger.info('1. Vai a: https://app.revenuecat.com');
+      logger.info('2. Crea un nuovo progetto (o usa uno esistente)');
+      logger.info('3. Copia il Project ID dal dashboard\n');
+
+      const { projectId, projectName } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'projectName',
+          message: 'Nome del progetto (per riferimento):',
+          default: this.detectedConfig.appName,
+        },
+        {
+          type: 'input',
+          name: 'projectId',
+          message: 'Project ID da RevenueCat Dashboard:',
+          validate: (input) => (input ? true : 'Project ID richiesto'),
+        },
+      ]);
+
+      (this.config as any).projectId = projectId;
+      (this.config as any).projectName = projectName;
     }
   }
 
