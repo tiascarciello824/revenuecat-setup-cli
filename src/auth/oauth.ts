@@ -204,6 +204,7 @@ export async function authenticateWithOAuth(): Promise<string> {
   authUrl.searchParams.set('state', state);
   authUrl.searchParams.set('code_challenge', challenge);
   authUrl.searchParams.set('code_challenge_method', 'S256');
+  authUrl.searchParams.set('prompt', 'consent'); // Force re-authorization with updated scopes
 
   // Start callback server
   const tokensPromise = startCallbackServer(state, verifier);
