@@ -298,16 +298,11 @@ export class RevenueCatClient {
   }
 
   /**
-   * Create an offering
+   * Create an offering (without packages)
    */
   async createOffering(offering: {
     lookup_key: string;
     display_name: string;
-    is_current: boolean;
-    packages: Array<{
-      lookup_key: string;
-      product_id: string;
-    }>;
   }): Promise<any> {
     try {
       const response = await this.client.post(
@@ -320,8 +315,63 @@ export class RevenueCatClient {
       // Handle 409 - offering already exists
       if (error.response?.status === 409) {
         logger.warning(`Offering ${offering.lookup_key} already exists, skipping...`);
-        return { lookup_key: offering.lookup_key, existed: true };
+        // Fetch existing offering to get ID
+        const offerings = await this.getOfferings();
+        const existing = offerings.find((o: any) => o.lookup_key === offering.lookup_key);
+        return existing || { lookup_key: offering.lookup_key, existed: true };
       }
+      handleAPIError(error);
+    }
+  }
+
+  /**
+   * Get all offerings
+   */
+  async getOfferings(): Promise<any[]> {
+    try {
+      const response = await this.client.get(`/projects/${this.projectId}/offerings`);
+      return response.data.items || response.data || [];
+    } catch (error) {
+      handleAPIError(error);
+      return [];
+    }
+  }
+
+  /**
+   * Create a package in an offering
+   */
+  async createPackage(offeringId: string, pkg: {
+    lookup_key: string;
+    product_id: string;
+  }): Promise<any> {
+    try {
+      const response = await this.client.post(
+        `/projects/${this.projectId}/offerings/${offeringId}/packages`,
+        pkg
+      );
+      logger.success(`Created package: ${pkg.lookup_key}`);
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.status === 409) {
+        logger.warning(`Package ${pkg.lookup_key} already exists, skipping...`);
+        return { lookup_key: pkg.lookup_key, existed: true };
+      }
+      handleAPIError(error);
+    }
+  }
+
+  /**
+   * Set offering as current
+   */
+  async setCurrentOffering(offeringId: string): Promise<any> {
+    try {
+      const response = await this.client.post(
+        `/projects/${this.projectId}/offerings/${offeringId}/actions/set_current`,
+        {}
+      );
+      logger.success(`Set offering as current`);
+      return response.data;
+    } catch (error: any) {
       handleAPIError(error);
     }
   }

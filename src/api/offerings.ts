@@ -31,25 +31,39 @@ export async function createOfferings(
   const results = [];
 
   for (const offering of offerings) {
-    const payload = {
+    // Step 1: Create offering (without packages)
+    const offeringPayload = {
       lookup_key: offering.id, // API v2 uses lookup_key instead of id
       display_name: offering.id.charAt(0).toUpperCase() + offering.id.slice(1), // Generate display name from id
-      is_current: offering.isCurrent,
-      packages: offering.packages.map((pkg) => {
+    };
+
+    const result = await retryWithBackoff(() => client.createOffering(offeringPayload));
+    const offeringId = result.id || result.object?.id;
+    
+    // Step 2: Create packages in the offering
+    if (offeringId && offering.packages && offering.packages.length > 0) {
+      for (const pkg of offering.packages) {
         // Convert store identifier to actual product ID if map is available
         const actualProductId = productIdMap 
           ? productIdMap.get(pkg.productId) || pkg.productId
           : pkg.productId;
-          
-        return {
-          lookup_key: getPackageIdentifier(pkg.type), // API v2 uses lookup_key for packages too
+        
+        const packagePayload = {
+          lookup_key: getPackageIdentifier(pkg.type),
           product_id: actualProductId,
         };
-      }),
-    };
-
-    // Create offering with retry logic
-    const result = await retryWithBackoff(() => client.createOffering(payload));
+        
+        await retryWithBackoff(() => 
+          client.createPackage(offeringId, packagePayload)
+        );
+      }
+    }
+    
+    // Step 3: Set as current offering if specified
+    if (offeringId && offering.isCurrent) {
+      await retryWithBackoff(() => client.setCurrentOffering(offeringId));
+    }
+    
     results.push(result);
   }
 
