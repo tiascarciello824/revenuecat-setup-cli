@@ -85,6 +85,7 @@ export class RevenueCatClient {
         `/projects/${this.projectId}/apps`,
         {
           name,
+          type: 'app_store',
           app_store: {
             bundle_id: bundleId,
           },
@@ -110,6 +111,7 @@ export class RevenueCatClient {
         `/projects/${this.projectId}/apps`,
         {
           name,
+          type: 'play_store',
           play_store: {
             package_name: packageName,
           },
