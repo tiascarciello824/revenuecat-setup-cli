@@ -56,7 +56,13 @@ export async function createProducts(
     
     // Map store_identifier to generated product ID
     const storeIdentifier = product.storeProductIdentifier || product.id;
-    const productId = result?.id || result?.object?.id;
+    let productId = result?.id || result?.object?.id;
+    
+    // If product already existed (409), fetch it to get the ID
+    if (result?.existed && !productId) {
+      const existingProduct = await client.findProductByStoreIdentifier(storeIdentifier);
+      productId = existingProduct?.id;
+    }
     
     if (productId) {
       productIdMap.set(storeIdentifier, productId);

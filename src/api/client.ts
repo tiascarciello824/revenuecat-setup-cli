@@ -271,6 +271,33 @@ export class RevenueCatClient {
   }
 
   /**
+   * Get all products in the project
+   */
+  async getProducts(): Promise<any[]> {
+    try {
+      const response = await this.client.get(`/projects/${this.projectId}/products`);
+      return response.data.items || response.data || [];
+    } catch (error) {
+      handleAPIError(error);
+      return [];
+    }
+  }
+
+  /**
+   * Find product by store identifier
+   */
+  async findProductByStoreIdentifier(storeIdentifier: string): Promise<any | null> {
+    try {
+      const products = await this.getProducts();
+      return products.find((product: any) => 
+        product.store_identifier === storeIdentifier
+      ) || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
    * Create an offering
    */
   async createOffering(offering: {
