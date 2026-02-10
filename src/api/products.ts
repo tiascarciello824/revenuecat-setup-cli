@@ -46,17 +46,9 @@ export async function createProducts(
       payload.display_name = product.displayName;
     }
 
-    // Add subscription details for subscription products
-    if (product.type === 'subscription' && product.duration) {
-      const isoDuration = durationToISO8601(product.duration);
-      if (isoDuration) {
-        payload.subscription = {
-          duration: isoDuration,
-        };
-        // Note: trial_duration must be configured in the store (App Store Connect / Google Play Console)
-        // It cannot be set via the RevenueCat API
-      }
-    }
+    // Note: For real store products, subscription parameters (duration, trial)
+    // are automatically read from App Store Connect / Google Play Console.
+    // They cannot be set via the RevenueCat API - configure them in the store instead.
 
     // Create product with retry logic
     const result = await retryWithBackoff(() => client.createProduct(payload));
