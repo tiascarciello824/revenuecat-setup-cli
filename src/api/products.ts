@@ -25,7 +25,8 @@ function durationToISO8601(duration: SubscriptionDuration): string | undefined {
  */
 export async function createProducts(
   client: RevenueCatClient,
-  products: ProductConfig[]
+  products: ProductConfig[],
+  appId?: string
 ): Promise<any[]> {
   const results = [];
 
@@ -36,11 +37,22 @@ export async function createProducts(
       store_identifier: product.storeProductIdentifier || product.id,
     };
 
-    // Add duration for subscriptions
+    // Add app_id if provided (required for API v2)
+    if (appId) {
+      payload.app_id = appId;
+    }
+
+    // Add subscription details for subscription products
     if (product.type === 'subscription' && product.duration) {
       const isoDuration = durationToISO8601(product.duration);
       if (isoDuration) {
-        payload.duration = isoDuration;
+        payload.subscription = {
+          duration: isoDuration,
+        };
+        // Add trial if specified
+        if (product.trialPeriodDays) {
+          payload.subscription.trial_duration = `P${product.trialPeriodDays}D`;
+        }
       }
     }
 

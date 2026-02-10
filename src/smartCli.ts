@@ -510,10 +510,14 @@ export class SmartRevenueCatSetupCLI {
     let entitlementsCreated = 0;
     let offeringsCreated = 0;
 
-    // Create products
+    // Create products (use iOS app_id)
     const productSpinner = ora('Creazione prodotti...').start();
     try {
-      await createProducts(client, this.config.products!);
+      const iosAppId = (this.config as any).iosAppId;
+      if (!iosAppId) {
+        throw new Error('iOS App ID non disponibile');
+      }
+      await createProducts(client, this.config.products!, iosAppId);
       productsCreated = this.config.products!.length;
       productSpinner.succeed(`Creati ${productsCreated} prodotti`);
     } catch (error: any) {
