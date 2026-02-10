@@ -301,11 +301,10 @@ export class RevenueCatClient {
    * Create an offering
    */
   async createOffering(offering: {
-    id: string;
+    lookup_key: string;
     is_current: boolean;
     packages: Array<{
-      id: string;
-      type: string;
+      lookup_key: string;
       product_id: string;
     }>;
   }): Promise<any> {
@@ -314,13 +313,13 @@ export class RevenueCatClient {
         `/projects/${this.projectId}/offerings`,
         offering
       );
-      logger.success(`Created offering: ${offering.id}`);
+      logger.success(`Created offering: ${offering.lookup_key}`);
       return response.data;
     } catch (error: any) {
       // Handle 409 - offering already exists
       if (error.response?.status === 409) {
-        logger.warning(`Offering ${offering.id} already exists, skipping...`);
-        return { id: offering.id, existed: true };
+        logger.warning(`Offering ${offering.lookup_key} already exists, skipping...`);
+        return { lookup_key: offering.lookup_key, existed: true };
       }
       handleAPIError(error);
     }

@@ -25,19 +25,26 @@ function getPackageIdentifier(type: PackageType): string {
  */
 export async function createOfferings(
   client: RevenueCatClient,
-  offerings: OfferingConfig[]
+  offerings: OfferingConfig[],
+  productIdMap?: Map<string, string>
 ): Promise<any[]> {
   const results = [];
 
   for (const offering of offerings) {
     const payload = {
-      id: offering.id,
+      lookup_key: offering.id, // API v2 uses lookup_key instead of id
       is_current: offering.isCurrent,
-      packages: offering.packages.map((pkg) => ({
-        id: getPackageIdentifier(pkg.type),
-        type: pkg.type,
-        product_id: pkg.productId,
-      })),
+      packages: offering.packages.map((pkg) => {
+        // Convert store identifier to actual product ID if map is available
+        const actualProductId = productIdMap 
+          ? productIdMap.get(pkg.productId) || pkg.productId
+          : pkg.productId;
+          
+        return {
+          lookup_key: getPackageIdentifier(pkg.type), // API v2 uses lookup_key for packages too
+          product_id: actualProductId,
+        };
+      }),
     };
 
     // Create offering with retry logic

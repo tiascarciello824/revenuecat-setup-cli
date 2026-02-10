@@ -574,7 +574,8 @@ export class SmartRevenueCatSetupCLI {
     // Create offerings
     const offeringSpinner = ora('Creazione offerings...').start();
     try {
-      await createOfferings(client, this.config.offerings!);
+      const productIdMap = (this.config as any).productIdMap;
+      await createOfferings(client, this.config.offerings!, productIdMap);
       offeringsCreated = this.config.offerings!.length;
       offeringSpinner.succeed(`Creati ${offeringsCreated} offering(s)`);
     } catch (error: any) {
