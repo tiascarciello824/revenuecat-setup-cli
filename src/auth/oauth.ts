@@ -13,6 +13,7 @@ const REDIRECT_URI = 'http://localhost:3000/callback';
 
 // OAuth Client registered with RevenueCat
 const CLIENT_ID = process.env.REVENUECAT_OAUTH_CLIENT_ID || 'UmV2ZW51ZUNhdCBTZXR1cCBDTEk=';
+const CLIENT_SECRET = process.env.REVENUECAT_OAUTH_CLIENT_SECRET || 'wC_jf-ex44uvolEDm9aNGwHhOmxJSHfIT9h3sIF24wO690f-ycssAmNf_goCfgvX';
 
 interface OAuthTokenResponse {
   access_token: string;
@@ -150,6 +151,7 @@ async function exchangeCodeForTokens(
     code,
     redirect_uri: REDIRECT_URI,
     client_id: CLIENT_ID,
+    client_secret: CLIENT_SECRET,
     code_verifier: codeVerifier,
   });
 
