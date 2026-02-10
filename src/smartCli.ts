@@ -404,34 +404,46 @@ export class SmartRevenueCatSetupCLI {
     const spinner = ora('Recupero chiavi API...').start();
 
     try {
-      // Get all API keys for the project
-      const allKeys = await client.getAllAPIKeys();
-      console.log('All API keys:', JSON.stringify(allKeys, null, 2));
-      
-      let iosKey = '';
-      let androidKey = '';
-
       // Get iOS and Android app IDs
       const iosAppId = (this.config as any).iosAppId;
       const androidAppId = (this.config as any).androidAppId;
       
-      console.log('Looking for keys for iOS app:', iosAppId);
-      console.log('Looking for keys for Android app:', androidAppId);
+      let iosKey = '';
+      let androidKey = '';
       
-      // Find keys by app_id
+      console.log('Fetching app details with public keys...');
+      
+      // Get app details with expand to include public keys
       if (iosAppId) {
-        const iosKeyObj = allKeys.find((key: any) => key.app_id === iosAppId);
-        if (iosKeyObj) {
-          iosKey = iosKeyObj.key || iosKeyObj.public_key || iosKeyObj.value || '';
-          console.log('iOS key found:', iosKey ? iosKey.substring(0, 20) + '...' : 'NOT FOUND');
+        try {
+          const iosAppDetails = await client.getAppWithKeys(iosAppId);
+          console.log('iOS app details:', JSON.stringify(iosAppDetails, null, 2));
+          
+          // Try various possible field names
+          iosKey = iosAppDetails.public_sdk_key || 
+                   iosAppDetails.sdk_key || 
+                   iosAppDetails.public_key ||
+                   iosAppDetails.public_api_key ||
+                   iosAppDetails.api_key || 
+                   '';
+        } catch (error: any) {
+          console.log('Failed to get iOS app details:', error.message);
         }
       }
       
       if (androidAppId) {
-        const androidKeyObj = allKeys.find((key: any) => key.app_id === androidAppId);
-        if (androidKeyObj) {
-          androidKey = androidKeyObj.key || androidKeyObj.public_key || androidKeyObj.value || '';
-          console.log('Android key found:', androidKey ? androidKey.substring(0, 20) + '...' : 'NOT FOUND');
+        try {
+          const androidAppDetails = await client.getAppWithKeys(androidAppId);
+          console.log('Android app details:', JSON.stringify(androidAppDetails, null, 2));
+          
+          androidKey = androidAppDetails.public_sdk_key || 
+                      androidAppDetails.sdk_key || 
+                      androidAppDetails.public_key ||
+                      androidAppDetails.public_api_key ||
+                      androidAppDetails.api_key || 
+                      '';
+        } catch (error: any) {
+          console.log('Failed to get Android app details:', error.message);
         }
       }
 
@@ -443,13 +455,23 @@ export class SmartRevenueCatSetupCLI {
         logger.dim(`  iOS Key: ${iosKey.substring(0, 15)}...`);
         logger.dim(`  Android Key: ${androidKey.substring(0, 15)}...`);
       } else {
-        spinner.warn('Alcune chiavi non sono state trovate');
-        if (!iosKey) logger.warning('Chiave iOS non trovata');
-        if (!androidKey) logger.warning('Chiave Android non trovata');
+        spinner.warn('Chiavi SDK non ancora generate');
+        logger.newline();
+        logger.info('ℹ️  Le chiavi SDK pubbliche verranno generate automaticamente da RevenueCat');
+        logger.info('   quando configurerai le credenziali dello store:\n');
+        logger.highlight('📋 Per completare il setup:');
+        logger.dim('   1. Vai su: https://app.revenuecat.com');
+        logger.dim('   2. Seleziona progetto "Conserva"');
+        logger.dim('   3. Vai su "Apps & providers"');
+        logger.dim('   4. Configura:');
+        logger.dim('      • iOS: Carica il file P8 da App Store Connect');
+        logger.dim('      • Android: Carica le credenziali Service Account da Google Play');
+        logger.dim('   5. Le chiavi SDK appariranno automaticamente in "API keys"');
+        logger.dim('   6. Copia le chiavi nel file .env del tuo progetto\n');
       }
     } catch (error: any) {
-      spinner.fail('Errore nel recupero delle chiavi: ' + error.message);
-      logger.warning('Le chiavi dovranno essere recuperate manualmente dal dashboard');
+      spinner.fail('Impossibile recuperare le chiavi API');
+      logger.warning('Le chiavi SDK verranno generate dopo la configurazione dello store');
     }
   }
 

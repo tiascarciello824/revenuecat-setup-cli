@@ -215,6 +215,29 @@ export class RevenueCatClient {
   }
 
   /**
+   * Get app with public keys (try with expand parameter)
+   */
+  async getAppWithKeys(appId: string): Promise<any> {
+    try {
+      // Try with expand parameter for public keys
+      const response = await this.client.get(
+        `/projects/${this.projectId}/apps/${appId}?expand=public_keys`
+      );
+      return response.data;
+    } catch (error) {
+      // Fallback to regular app details
+      try {
+        const response = await this.client.get(
+          `/projects/${this.projectId}/apps/${appId}`
+        );
+        return response.data;
+      } catch (err) {
+        handleAPIError(error);
+      }
+    }
+  }
+
+  /**
    * Create a product
    */
   async createProduct(product: {
