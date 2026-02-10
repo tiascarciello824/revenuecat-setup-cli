@@ -172,6 +172,21 @@ export class RevenueCatClient {
   }
 
   /**
+   * Get all API keys for the project (includes app-specific keys)
+   */
+  async getAllAPIKeys(): Promise<any[]> {
+    try {
+      const response = await this.client.get(
+        `/projects/${this.projectId}/api_keys`
+      );
+      return response.data.items || response.data || [];
+    } catch (error) {
+      handleAPIError(error);
+      return [];
+    }
+  }
+
+  /**
    * Get public API keys for a specific app
    */
   async getAppKeys(appId: string): Promise<any> {

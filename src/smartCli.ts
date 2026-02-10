@@ -404,45 +404,34 @@ export class SmartRevenueCatSetupCLI {
     const spinner = ora('Recupero chiavi API...').start();
 
     try {
-      // Get all apps to find the ones we just created
-      const apps = await client.getApps();
+      // Get all API keys for the project
+      const allKeys = await client.getAllAPIKeys();
+      console.log('All API keys:', JSON.stringify(allKeys, null, 2));
       
       let iosKey = '';
       let androidKey = '';
 
-      // Find iOS app
-      const iosApp = apps.find((app: any) => 
-        app.bundle_id === this.detectedConfig.iosBundleId || 
-        app.type === 'ios'
-      );
-
-      if (iosApp) {
-        // Try to get key from app details
-        const iosDetails = await client.getAppDetails(iosApp.id);
-        iosKey = iosDetails.public_key || iosDetails.api_key || '';
-        
-        // If not in details, try api_keys endpoint
-        if (!iosKey) {
-          const iosKeys = await client.getAppKeys(iosApp.id);
-          iosKey = iosKeys?.public_key || iosKeys?.items?.[0]?.key || '';
+      // Get iOS and Android app IDs
+      const iosAppId = (this.config as any).iosAppId;
+      const androidAppId = (this.config as any).androidAppId;
+      
+      console.log('Looking for keys for iOS app:', iosAppId);
+      console.log('Looking for keys for Android app:', androidAppId);
+      
+      // Find keys by app_id
+      if (iosAppId) {
+        const iosKeyObj = allKeys.find((key: any) => key.app_id === iosAppId);
+        if (iosKeyObj) {
+          iosKey = iosKeyObj.key || iosKeyObj.public_key || iosKeyObj.value || '';
+          console.log('iOS key found:', iosKey ? iosKey.substring(0, 20) + '...' : 'NOT FOUND');
         }
       }
-
-      // Find Android app
-      const androidApp = apps.find((app: any) => 
-        app.package_name === this.detectedConfig.androidPackageName || 
-        (app.type === 'android' && !iosApp)
-      );
-
-      if (androidApp) {
-        // Try to get key from app details
-        const androidDetails = await client.getAppDetails(androidApp.id);
-        androidKey = androidDetails.public_key || androidDetails.api_key || '';
-        
-        // If not in details, try api_keys endpoint
-        if (!androidKey) {
-          const androidKeys = await client.getAppKeys(androidApp.id);
-          androidKey = androidKeys?.public_key || androidKeys?.items?.[0]?.key || '';
+      
+      if (androidAppId) {
+        const androidKeyObj = allKeys.find((key: any) => key.app_id === androidAppId);
+        if (androidKeyObj) {
+          androidKey = androidKeyObj.key || androidKeyObj.public_key || androidKeyObj.value || '';
+          console.log('Android key found:', androidKey ? androidKey.substring(0, 20) + '...' : 'NOT FOUND');
         }
       }
 
