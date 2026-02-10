@@ -32,7 +32,6 @@ export async function createProducts(
 
   for (const product of products) {
     const payload: any = {
-      id: product.id,
       type: product.type,
       store_identifier: product.storeProductIdentifier || product.id,
     };
@@ -40,6 +39,11 @@ export async function createProducts(
     // Add app_id if provided (required for API v2)
     if (appId) {
       payload.app_id = appId;
+    }
+    
+    // Add display_name if available
+    if (product.displayName) {
+      payload.display_name = product.displayName;
     }
 
     // Add subscription details for subscription products
