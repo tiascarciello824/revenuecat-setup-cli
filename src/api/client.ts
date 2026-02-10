@@ -302,6 +302,7 @@ export class RevenueCatClient {
    */
   async createOffering(offering: {
     lookup_key: string;
+    display_name: string;
     is_current: boolean;
     packages: Array<{
       lookup_key: string;

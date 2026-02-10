@@ -33,6 +33,7 @@ export async function createOfferings(
   for (const offering of offerings) {
     const payload = {
       lookup_key: offering.id, // API v2 uses lookup_key instead of id
+      display_name: offering.id.charAt(0).toUpperCase() + offering.id.slice(1), // Generate display name from id
       is_current: offering.isCurrent,
       packages: offering.packages.map((pkg) => {
         // Convert store identifier to actual product ID if map is available
