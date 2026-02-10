@@ -45,7 +45,7 @@ Could you please register this OAuth client and provide the client_id?
 
 Thank you!
 
-Carmine Mattiascarciello
+Carmine Mattia Scarciello
 tiascarciello@gmail.com
 ```
 

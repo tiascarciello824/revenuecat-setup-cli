@@ -17,6 +17,9 @@ outputs/
 .env.local
 .env.*.local
 
+# OAuth credentials (keep private)
+OAUTH_CREDENTIALS.md
+
 # OS files
 .DS_Store
 Thumbs.db

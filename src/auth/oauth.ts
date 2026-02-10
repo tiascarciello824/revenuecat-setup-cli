@@ -11,9 +11,8 @@ import open from 'open';
 const OAUTH_BASE_URL = 'https://api.revenuecat.com/oauth2';
 const REDIRECT_URI = 'http://localhost:3000/callback';
 
-// TODO: Replace with actual client_id once registered with RevenueCat
-// Contact: support@revenuecat.com
-const CLIENT_ID = process.env.REVENUECAT_OAUTH_CLIENT_ID || 'PENDING_REGISTRATION';
+// OAuth Client registered with RevenueCat
+const CLIENT_ID = process.env.REVENUECAT_OAUTH_CLIENT_ID || 'UmV2ZW51ZUNhdCBTZXR1cCBDTEk=';
 
 interface OAuthTokenResponse {
   access_token: string;
