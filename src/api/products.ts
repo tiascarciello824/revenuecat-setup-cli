@@ -62,10 +62,14 @@ export async function createProducts(
     if (result?.existed && !productId) {
       const existingProduct = await client.findProductByStoreIdentifier(storeIdentifier);
       productId = existingProduct?.id;
+      console.log(`Found existing product: ${storeIdentifier} -> ${productId}`);
     }
     
     if (productId) {
       productIdMap.set(storeIdentifier, productId);
+      console.log(`Mapped: ${storeIdentifier} -> ${productId}`);
+    } else {
+      console.log(`WARNING: No product ID found for ${storeIdentifier}`);
     }
   }
 
