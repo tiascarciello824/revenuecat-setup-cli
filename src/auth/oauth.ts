@@ -198,6 +198,7 @@ export async function authenticateWithOAuth(): Promise<string> {
     'project_configuration:products:read_write',
     'project_configuration:entitlements:read_write',
     'project_configuration:offerings:read_write',
+    'project_configuration:packages:read_write', // Required for package creation/attachment
   ].join(' ');
   
   authUrl.searchParams.set('scope', scopes);
