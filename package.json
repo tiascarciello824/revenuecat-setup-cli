@@ -7,7 +7,8 @@
     "revenuecat-setup": "./dist/bin/revenuecat-setup.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run copy-templates",
+    "copy-templates": "mkdir -p dist/templates && cp src/templates/*.sql dist/templates/ 2>/dev/null || true",
     "start": "node dist/bin/revenuecat-setup.js",
     "dev": "ts-node src/index.ts",
     "test": "jest",
