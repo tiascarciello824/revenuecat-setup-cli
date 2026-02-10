@@ -547,8 +547,12 @@ export class SmartRevenueCatSetupCLI {
       if (!iosAppId) {
         throw new Error('iOS App ID non disponibile');
       }
-      await createProducts(client, this.config.products!, iosAppId);
-      productsCreated = this.config.products!.length;
+      const productIdMap = await createProducts(client, this.config.products!, iosAppId);
+      productsCreated = productIdMap.size;
+      
+      // Store the product ID mapping for later use
+      (this.config as any).productIdMap = productIdMap;
+      
       productSpinner.succeed(`Creati ${productsCreated} prodotti`);
     } catch (error: any) {
       productSpinner.fail('Errore creazione prodotti: ' + error.message);
@@ -558,7 +562,8 @@ export class SmartRevenueCatSetupCLI {
     // Create entitlements
     const entitlementSpinner = ora('Creazione entitlements...').start();
     try {
-      await createEntitlements(client, this.config.entitlements!);
+      const productIdMap = (this.config as any).productIdMap;
+      await createEntitlements(client, this.config.entitlements!, productIdMap);
       entitlementsCreated = this.config.entitlements!.length;
       entitlementSpinner.succeed(`Creati ${entitlementsCreated} entitlement(s)`);
     } catch (error: any) {

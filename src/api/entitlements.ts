@@ -11,7 +11,8 @@ import { retryWithBackoff } from '../utils/retry';
  */
 export async function createEntitlements(
   client: RevenueCatClient,
-  entitlements: EntitlementConfig[]
+  entitlements: EntitlementConfig[],
+  productIdMap?: Map<string, string>
 ): Promise<any[]> {
   const results = [];
 
@@ -28,8 +29,13 @@ export async function createEntitlements(
     if (entitlement.productIds && entitlement.productIds.length > 0) {
       const entitlementId = result.id || result.object?.id;
       if (entitlementId) {
+        // Convert store identifiers to actual product IDs
+        const actualProductIds = productIdMap 
+          ? entitlement.productIds.map(storeId => productIdMap.get(storeId) || storeId)
+          : entitlement.productIds;
+          
         await retryWithBackoff(() => 
-          client.attachProductsToEntitlement(entitlementId, entitlement.productIds)
+          client.attachProductsToEntitlement(entitlementId, actualProductIds)
         );
       }
     }

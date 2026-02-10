@@ -433,8 +433,8 @@ export class RevenueCatSetupCLI {
     // Create products
     const productSpinner = ora('Creating products...').start();
     try {
-      const productResults = await createProducts(client, this.config.products!);
-      productsCreated = productResults.length;
+      const productIdMap = await createProducts(client, this.config.products!);
+      productsCreated = productIdMap.size;
       productSpinner.succeed(`Created ${productsCreated} product(s)`);
     } catch (error: any) {
       productSpinner.fail('Failed to create products: ' + error.message);

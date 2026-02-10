@@ -22,13 +22,14 @@ function durationToISO8601(duration: SubscriptionDuration): string | undefined {
 
 /**
  * Create products via RevenueCat API
+ * Returns map of store_identifier -> generated product ID
  */
 export async function createProducts(
   client: RevenueCatClient,
   products: ProductConfig[],
   appId?: string
-): Promise<any[]> {
-  const results = [];
+): Promise<Map<string, string>> {
+  const productIdMap = new Map<string, string>();
 
   for (const product of products) {
     const payload: any = {
@@ -52,8 +53,15 @@ export async function createProducts(
 
     // Create product with retry logic
     const result = await retryWithBackoff(() => client.createProduct(payload));
-    results.push(result);
+    
+    // Map store_identifier to generated product ID
+    const storeIdentifier = product.storeProductIdentifier || product.id;
+    const productId = result?.id || result?.object?.id;
+    
+    if (productId) {
+      productIdMap.set(storeIdentifier, productId);
+    }
   }
 
-  return results;
+  return productIdMap;
 }
