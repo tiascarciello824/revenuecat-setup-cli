@@ -229,8 +229,8 @@ export class RevenueCatClient {
    * Create an entitlement
    */
   async createEntitlement(entitlement: {
-    id: string;
-    name: string;
+    lookup_key: string;
+    display_name: string;
     product_ids: string[];
   }): Promise<any> {
     try {
@@ -238,13 +238,13 @@ export class RevenueCatClient {
         `/projects/${this.projectId}/entitlements`,
         entitlement
       );
-      logger.success(`Created entitlement: ${entitlement.id}`);
+      logger.success(`Created entitlement: ${entitlement.lookup_key}`);
       return response.data;
     } catch (error: any) {
       // Handle 409 - entitlement already exists
       if (error.response?.status === 409) {
-        logger.warning(`Entitlement ${entitlement.id} already exists, skipping...`);
-        return { id: entitlement.id, existed: true };
+        logger.warning(`Entitlement ${entitlement.lookup_key} already exists, skipping...`);
+        return { lookup_key: entitlement.lookup_key, existed: true };
       }
       handleAPIError(error);
     }

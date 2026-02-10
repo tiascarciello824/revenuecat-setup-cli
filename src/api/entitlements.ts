@@ -17,8 +17,8 @@ export async function createEntitlements(
 
   for (const entitlement of entitlements) {
     const payload = {
-      id: entitlement.id,
-      name: entitlement.displayName,
+      lookup_key: entitlement.id, // API v2 uses lookup_key instead of id
+      display_name: entitlement.displayName, // API v2 uses display_name instead of name
       product_ids: entitlement.productIds,
     };
 
